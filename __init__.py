@@ -239,18 +239,16 @@ class PDB:
                         atom.setCoords((newc[0], newc[1], newc[2]))
 
     ## write a PDB, including SEQRES records, to a file
-    def formatPDB(self, handle, chains = None, use_atom_seqres=1):
+    def formatPDB(self, handle, chainkeys = None, use_atom_seqres=1):
         for record in self._extra_records:
             handle.write(record)
         modelkeys = self._models.keys()
         ## print SEQRES only once, for model #1
         model = self._models[modelkeys[0]]
         chains = model.getChains()
-        if chains == None:
+        if chainkeys == None:
             chainkeys = chains.keys()
             chainkeys.sort()
-        else:
-            chainkeys = chains
             
         for chainkey in chainkeys:
             chain = chains[chainkey]
@@ -277,9 +275,6 @@ class PDB:
             model = self._models[key]
             if len(modelkeys) > 1:
                 handle.write("MODEL %d\n" % key)
-            chains = model.getChains()
-            chainkeys = chains.keys()
-            chainkeys.sort()
             for chainkey in chainkeys:
                 chain = chains[chainkey]
                 residues = chain.getResidues()
