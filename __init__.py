@@ -19,7 +19,7 @@ class ResidueIntegrityError(PDBError):
     def __str__(self):
         return "Integrity constraint failed: more than one residue numbered %d in chain\n" % number
 
-    
+
 class Atom:
     def __init__(self, serial=1, name=None, alternate=" ", residue=None, coords=(0.,0.,0.), occupancy=1.0, bfactor=1.0, element=' ', isHetatm=0):
         self._serial = serial
@@ -50,7 +50,7 @@ class Atom:
 
     def getCoords(self):
         return self._coords
-    
+
     def setOccupancy(self, occupancy):
         self._occupancy = occupancy
 
@@ -83,13 +83,13 @@ class Atom:
             code = "%-6s%5d %4s%c%4s%c%4s%c   %8.3f%8.3f%8.3f %5.2f%6.2f" % (record_type, self._serial, atom_name, insertion_code, self._residue.getName(),  self._residue.getChain().getName(), resnum, insertion_code, self._coords[0], self._coords[1], self._coords[2], self._occupancy, self._bfactor)
         else:
             code = "%-6s%5d %4s%c%3s %c%4s%c   %8.3f%8.3f%8.3f %5.2f%6.2f" % (record_type, self._serial, atom_name, self._alternate, self._residue.getName(),  self._residue.getChain().getName(), resnum, insertion_code, self._coords[0], self._coords[1], self._coords[2], self._occupancy, self._bfactor)
-            
+
         return code
-             
+
     def __str__(self):
         return  "Atom %d, %s @ (%5.2f %5.2f %5.2f)" % (self._serial, self._name, self._coords[0], self._coords[1], self._coords[2])
 
-        
+
 class Residue:
     def __init__(self, number=1, name=None, chain=None, atoms=None):
         self._number = number
@@ -130,7 +130,7 @@ class Chain:
         self._model = None
 
         self.buildSequence()
-        
+
     def buildSequence(self):
         ## build the chain's sequence from the residue list
         sequence = [" "] * len(self._residues)
@@ -148,15 +148,15 @@ class Chain:
 
     def getModel(self):
         return _model
-    
+
     def getName(self):
         return self._name
 
     def getResidues(self):
         return self._residues
-    
-        
-    
+
+
+
     def getResidue(self, number):
         x = filter(lambda x: x.getNumber() == number, self._residues)
         if len(x) == 0:
@@ -165,7 +165,7 @@ class Chain:
         elif len(x) > 1:
             raise ResidueIntegrityConstraint, number
         return x[0]
-        
+
     def getSequence(self):
         return self._sequence
 
@@ -184,10 +184,10 @@ class Model:
 
     def getChain(self, chain):
         return self._chains[chain]
-    
+
     def getChains(self):
         return self._chains
-    
+
 class PDB:
     def __init__(self, models, extra_records):
         self._models = models
@@ -224,17 +224,17 @@ class PDB:
             chains = model.getChains()
             chainkeys = chains.keys()
             chainkeys.sort()
-            ## for every chain, 
+            ## for every chain,
             for chainkey in chainkeys:
                 chain = chains[chainkey]
                 residues = chain.getResidues()
-                ## for every residue, 
+                ## for every residue,
                 for res in residues:
                     atoms = res.getAtoms()
                     ## for every atom,
                     for atom in atoms:
                         c = atom.getCoords()
-                        ## transform the coordinates 
+                        ## transform the coordinates
                         newc = Numeric.innerproduct(Numeric.array((c[0], c[1], c[2], 1.)), matrix)
                         atom.setCoords((newc[0], newc[1], newc[2]))
 
@@ -249,7 +249,7 @@ class PDB:
         if chainkeys == None:
             chainkeys = chains.keys()
             chainkeys.sort()
-            
+
         for chainkey in chainkeys:
             chain = chains[chainkey]
             if use_atom_seqres:
@@ -270,7 +270,7 @@ class PDB:
                             break
                         handle.write(" %3s" % protein_one_to_three[seq[j]])
                     handle.write("\n")
- 
+
         for key in modelkeys:
             model = self._models[key]
             if len(modelkeys) > 1:

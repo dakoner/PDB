@@ -18,7 +18,7 @@ class PDBCache:
             self.write = 1
             if not os.path.exists(pdbdir):
                 os.makedirs(pdbdir)
-        
+
         if self.write and not self.read:
             self.filename = self.getPDB(pdbdir, entry)
         elif self.read:
@@ -127,7 +127,7 @@ class PDBCache:
 
         raise RuntimeError, "Unrecognized entry format", entry
 
-            
+
 
 def test():
     print PDBCache("/lab/db/pdb/hash", "pdb1oct.ent", "r").filename
