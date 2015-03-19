@@ -51,7 +51,7 @@ class PDBParser:
         curr_residue_list = []
         curr_chain = None
         chain_ter_seen = {}
-        
+
         while 1:
             line = self._handle.readline()
             if Common.debug: print "PDBParser line: %s" % line,
@@ -81,10 +81,10 @@ class PDBParser:
                 curr_model_number = int(string.split(line)[1])
                 if Common.debug: print "PDBParse: model entry", curr_model_number
                 continue
-            
+
             ## at the end of a new model, clear away state data.
             ## The TER record before ENDMDL would have dealt with adding the model to the chain
-                
+
             elif line[:6] == 'ENDMDL':
                 if Common.debug: print "PDBParse end of model entry", curr_model_number
                 models[curr_model_number] = PDB.Model(chains)
@@ -98,7 +98,7 @@ class PDBParser:
                 chain_ter_seen = {}
                 continue
 
-            
+
             elif line[:6] == 'SEQRES':
                 chain_id = line[11]
                 chain_data = string.split(line[19:70])
@@ -113,7 +113,7 @@ class PDBParser:
                 if Common.debug: print "Store SEQRES chain '%s' (%s)" % (chain_id, chain_data)
                 for res in chain_data:
                     seqres_chains[curr_seqres_chain] += Common.three_to_one(res)
-                    
+
             elif line[:4] == 'ATOM' or line[:6] == 'HETATM':
                 atom_num = int(line[6:11])
                 atom_name = string.strip(line[12:16])
@@ -132,7 +132,7 @@ class PDBParser:
                     bfactor = float(line[60:66])
                 except:
                     bfactor = 0.0
-                    
+
                 try:
                     element = line[77]
                 except IndexError:
@@ -170,16 +170,16 @@ class PDBParser:
                     ## finished parsing a residue, so build a new
                     ## residue object and store all the accumulated
                     ## atoms into this residue
-                    
+
                     if curr_res_num != None and curr_res_name not in Common.residue_skip_list:
                         addResidueToResidueList(curr_residue_list, curr_res_num, curr_res_name, curr_atom_list)
 
                     if Common.debug: print "New residue", res_num
-                    
+
                     ## rememebr the new current residue
                     curr_res_num = res_num
                     curr_res_name = res_name
-                    
+
                     ## clear the accumulated atom list
                     curr_atom_list = []
 
@@ -202,9 +202,9 @@ class PDBParser:
             ## when we see a TER record, save the chain it came from
             ## from because some PDB files put ions 'associated' with the chain
             ## after the TER record:
-            ## ATOM   3660  OXT GLN B 502     129.488  87.534  67.598  1.00168.80           O  
-            ## TER    3661      GLN B 502                                                      
-            ## HETATM 3662  S   SO4 B   1      99.307  73.882  58.307  1.00 63.92           S  
+            ## ATOM   3660  OXT GLN B 502     129.488  87.534  67.598  1.00168.80           O
+            ## TER    3661      GLN B 502
+            ## HETATM 3662  S   SO4 B   1      99.307  73.882  58.307  1.00 63.92           S
 
             elif line[:3] == 'TER':
                 if Common.debug: print "PDBParser: TER on chain", chain_id
@@ -224,7 +224,7 @@ class PDBParser:
                 pass
             else:
                 extra_records.append(line)
-                
+
         ## Build the sequences after everything else is done
         ## (I did this in case the SEQRES came after ATOM records, even though that's illegal)
         for chain_id in chains.keys():
@@ -244,7 +244,7 @@ def main():
     outputPrefix = "PDB"
     output_fasta = 0
     output_pdb = 0
-    
+
     try:
         opts, args = getopt.getopt(sys.argv[1:], "p:c:o:sfd",["pdb=", "chain=","outputPrefix=","seqres","fasta","pdb"])
     except getopt.GetoptError, what:
@@ -262,10 +262,10 @@ def main():
             output_fasta = 1
         if o in ('-d', 'pdb'):
             output_pdb = 1
-            
+
     if not pdbFile or not chain:
         raise RuntimeError, "missing pdbfile or chain"
-    
+
     f = open(pdbFile)
     p = PDBParser(f).parse()
     ms = p.getModels().keys()
@@ -278,7 +278,7 @@ def main():
             p.formatPDB(pdb_output, None, not seqres)
         else:
             p.formatPDB(pdb_output, [chain], not seqres)
-            
+
     if output_fasta:
         fasta_output = open("%s.fa" % outputPrefix, "w")
         if chain == '-':
